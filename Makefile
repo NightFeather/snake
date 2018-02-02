@@ -1,15 +1,19 @@
 
+TARGET="snake"
+CFLAGS="-Wall"
 SRCDIR="src/"
 INCLUDEDIR="include/"
 BUILDDIR="build/"
+SRCS = $(wildcard src/*.c)
+OBJS = $(patsubst src/%.c, build/%.o, $(SRCS))
 
-default: main
+default: ${TARGET}
 
-main: build/main.o
-	gcc -I${INCLUDEDIR} build/main.o -o main
+${TARGET}: ${OBJS}
+	gcc ${CFLAGS} -I${INCLUDEDIR} $(OBJS) -o ${TARGET}
 
-build/main.o: src/main.c
-	gcc -I${INCLUDEDIR} -c src/main.c -o build/main.o
+build/%.o: src/%.c
+	gcc ${CFLAGS} -I${INCLUDEDIR} -c $< -o $@
 
 clean:
-	rm build/* main
+	rm build/* ${TARGET}
