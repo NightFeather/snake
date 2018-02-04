@@ -8,3 +8,7 @@ termsize get_terminal_size(){
   result.col = w.ws_col;
   return result;
 }
+
+void puts_at(int row, int col, char* string, int length){
+  printf("\e[%d;%dH%.*s", row, col, length, string);
+}
