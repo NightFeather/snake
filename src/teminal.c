@@ -1,12 +1,10 @@
 #include "terminal.h"
 
-termsize get_terminal_size(){
+void get_terminal_size(int* cols, int* rows){
   struct winsize w;
-  termsize result;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-  result.row = w.ws_row;
-  result.col = w.ws_col;
-  return result;
+  *rows = w.ws_row;
+  *cols = w.ws_col;
 }
 
 void puts_at(int row, int col, char* string, int length){

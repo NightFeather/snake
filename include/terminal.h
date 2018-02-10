@@ -6,13 +6,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
-typedef struct {
-  int row, col;
-} termsize;
-
-termsize get_terminal_size();
+void get_terminal_size(int*, int*);
 
 void puts_at(int,int,char*, int);
 
