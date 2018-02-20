@@ -7,6 +7,6 @@ void get_terminal_size(int* cols, int* rows){
   *cols = w.ws_col;
 }
 
-void puts_at(int row, int col, char* string, int length){
+void puts_at(int col, int row, char* string, int length){
   printf("\e[%d;%dH%.*s", row, col, length, string);
 }
