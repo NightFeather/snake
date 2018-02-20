@@ -12,9 +12,11 @@ typedef struct {
 } CoordList;
 
 void list_add(CoordList*,int,int);
-void list_del(CoordList*,int,int);
-Coord* list_take(CoordList*);
 void list_clear(CoordList*);
+Coord* list_del(CoordList*,int,int);
+void list_each(CoordList*, void (*)(Coord));
+int list_len(CoordList*);
+Coord* list_take(CoordList*);
 
 
 #endif
