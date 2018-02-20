@@ -1,15 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "coord_list.h"
 #include "terminal.h"
+#include "game.h"
 
 int main(){
-  termsize size = {0};
-  int i;
-  printf("Hello World.\n");
-  size = get_terminal_size();
-  printf("Terminal size: %dx%d\n", size.col, size.row);
-  system("clear");
-  for(i = 0; i < size.col && i < size.row; i++)
-    puts_at(i,i,"*",1);
+  setvbuf(stdout, NULL, _IONBF, 0);
+  game_init();
+  game_start();
+  getchar();
+  game_quit();
   return 0;
 }
