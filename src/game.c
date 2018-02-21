@@ -58,9 +58,14 @@ void game_quit(){
 void update(int sig){
   CoordList* psnake; psnake = &snake;
   Coord next;
-  char buffer[8] = {0};
+  char buffer[512] = {0};
   next = next_coord(*psnake->head, direction);
-  sprintf(buffer, "%3d%3d", list_len(psnake), list_len(&food));
+  sprintf( buffer,
+           "%dx%d h: (%d,%d) l:%3d spd:%3.1fms",
+          cols, rows,
+          psnake->head->x, psnake->head->y,
+          list_len(psnake),
+          (float)delay/1000);
   if(!lock){
     lock = 1;
     printf("\e[2J\e[H");
