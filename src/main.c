@@ -8,7 +8,6 @@ int main(){
   setvbuf(stdout, NULL, _IONBF, 0);
   game_init();
   game_start();
-  getch();
   game_quit();
   return 0;
 }

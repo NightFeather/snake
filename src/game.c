@@ -15,15 +15,18 @@ static int lock = 0, stopped = 0;
 static void update(int);
 static void draw_snake(Coord);
 static void snake_move(CoordList*, int);
-//static void snake_extend(CoordList, int);
-//static void make_food();
+static void capture_key(void);
+static void snake_extend(CoordList*, int);
+static void make_food();
 //static void remove_food(Coord);
+static void draw_food();
 static Coord next_coord(Coord, int);
 
 void game_init(){
   int i =0;
   struct sigaction sa;
 
+  srand(time(NULL));
   get_terminal_size(&cols, &rows);
 
   list_clear(&snake);
@@ -38,22 +41,37 @@ void game_init(){
 }
 
 void game_start(){
+  make_food();
   update(0);
+  capture_key();
 }
 
 void game_quit(){
   stopped = 1;
   list_clear(&snake);
   list_clear(&food);
+  signal(SIGALRM, SIG_DFL);
+  system("clear");
 }
 
 void update(int sig){
-  CoordList* psnake = &snake;
+  CoordList* psnake; psnake = &snake;
+  Coord next;
+  char buffer[8] = {0};
+  next = next_coord(*psnake->head, direction);
+  sprintf(buffer, "%3d%3d", list_len(psnake), list_len(&food));
   if(!lock){
     lock = 1;
     system("clear");
-    snake_move(psnake, direction);
+    puts_at(1,1, buffer, 6);
+    if(list_include(&food, next.x, next.y)){
+      snake_extend(psnake, direction);
+      make_food();
+    } else {
+      snake_move(psnake, direction);
+    }
     list_each(psnake, draw_snake);
+    list_each(&food, draw_food);
     lock = 0;
   }
   if(!stopped)
@@ -64,14 +82,23 @@ void draw_snake(Coord coord){
   puts_at(coord.x+1, coord.y+1, "*", 1);
 }
 
-void snake_move(CoordList *_snake, int dir){
-  Coord next, *temp;
+void draw_food(Coord coord){
+  puts_at(coord.x+1, coord.y+1, "o", 1);
+}
+
+void snake_extend(CoordList *_snake, int dir){
+  Coord next, *temp; temp = 0x0;
   next = next_coord(*_snake->head, direction);
   temp = list_del(&food, next.x, next.y);
   list_add(_snake, next.x, next.y);
-  if(!temp)
-    temp = list_take(_snake);
+  if(temp){ free(temp); }
+}
 
+void snake_move(CoordList *_snake, int dir){
+  Coord next, *temp; temp = 0x0;
+  next = next_coord(*_snake->head, direction);
+  list_add(_snake, next.x, next.y);
+  temp = list_take(_snake);
   free(temp);
 }
 
@@ -91,4 +118,44 @@ Coord next_coord(Coord coord, int direction){
   }
 
   return coord;
+}
+
+void capture_key(){
+  int dir = -1, flag = 0;
+  char ch;
+  while(!stopped){
+    ch = getch();
+    if( ch == '\e'){ flag = 1; }
+    if( ch == '[' && flag == 1 ){ flag = 2; }
+    if(flag == 2){
+      switch(ch){
+        case 'A': // up
+          dir = 3;
+          break;
+        case 'B': // down
+          dir = 1;
+          break;
+        case 'C': // right
+          dir = 0;
+          break;
+        case 'D': // left
+          dir = 2;
+          break;
+      }
+      if(dir >= 0 && (dir ^ direction) != 2 ){
+        direction = dir;
+      }
+    }
+    if(ch == 'q'){ stopped = 1; break; }
+  }
+}
+
+void make_food(){
+  int x,y;
+  do {
+    x = rand() % cols + 1;
+    y = rand() % rows + 1;
+  } while(list_include(&food, x, y));
+
+  list_add(&food, x, y);
 }
