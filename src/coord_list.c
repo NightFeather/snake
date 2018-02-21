@@ -20,6 +20,16 @@ void list_clear(CoordList* list){
   list->head = 0x0;
 }
 
+int list_include(CoordList* list, int x, int y){
+  Coord *ptr;
+  ptr = list->head;
+  while(ptr){
+    if(ptr->x == x && ptr->y == y){ return 1; }
+    ptr = ptr->next;
+  }
+  return 0;
+}
+
 Coord* list_del(CoordList* list, int x, int y){
   Coord *prev, *ptr;
   prev = ptr = list->head;
