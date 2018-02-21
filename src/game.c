@@ -11,17 +11,17 @@ static CoordList snake = {0}, food = {0};
 static unsigned int delay = 50000;
 static int cols = 0, rows = 0;
 static int score = 0, direction = 0;
-static int lock = 0, stopped = 0;
+static int key_lock = 0, draw_lock = 0, stopped = 0;
 
 static void update(int);
-static void draw_snake(Coord);
-static void snake_move(CoordList*, int);
 static void capture_key(void);
-static void snake_extend(CoordList*, int);
-static void make_food();
-//static void remove_food(Coord);
 static void draw_food();
+static void draw_snake(Coord);
+static void fail();
+static void make_food();
 static Coord next_coord(Coord, int);
+static void snake_move(CoordList*, int);
+static void snake_extend(CoordList*, int);
 
 void game_init(){
   int i =0;
@@ -66,19 +66,27 @@ void update(int sig){
           psnake->head->x, psnake->head->y,
           list_len(psnake),
           (float)delay/1000);
-  if(!lock){
-    lock = 1;
+  if(!draw_lock){
+    draw_lock = 1;
     printf("\e[2J\e[H");
     puts_at(1,1, buffer);
-    if(list_include(&food, next.x, next.y)){
-      snake_extend(psnake, direction);
-      make_food();
+    if( list_include(psnake, next.x, next.y) ||
+        next.x < 0 || next.y < 0 ||
+        next.x > cols || next.y > rows){
+      // u fail
+      fail();
     } else {
-      snake_move(psnake, direction);
+      if(list_include(&food, next.x, next.y)){
+        snake_extend(psnake, direction);
+        make_food();
+      } else {
+        snake_move(psnake, direction);
+      }
+      list_each(psnake, draw_snake);
+      list_each(&food, draw_food);
+      key_lock = 0;
+      draw_lock = 0;
     }
-    list_each(psnake, draw_snake);
-    list_each(&food, draw_food);
-    lock = 0;
   }
   if(!stopped)
     ualarm(delay, 0);
@@ -148,7 +156,7 @@ void capture_key(){
           dir = 2;
           break;
       }
-      if(dir >= 0 && (dir ^ direction) != 2 ){
+      if(dir >= 0 && (dir ^ direction) != 2 && !key_lock){
         direction = dir;
       }
     }
@@ -164,4 +172,14 @@ void make_food(){
   } while(list_include(&food, x, y));
 
   list_add(&food, x, y);
+}
+
+void fail(){
+  int x,y;
+  stopped = 1;
+  x = cols / 2 - 7;
+  y = rows / 2;
+  puts_at(x,y-1,"************");
+  puts_at(x,y  ,"* u failed *");
+  puts_at(x,y+1,"************");
 }
