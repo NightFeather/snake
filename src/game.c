@@ -8,6 +8,7 @@
 #include "coord_list.h"
 
 static CoordList snake = {0}, food = {0};
+static unsigned int delay = 50000;
 static int cols = 0, rows = 0;
 static int score = 0, direction = 0;
 static int lock = 0, stopped = 0;
@@ -50,8 +51,8 @@ void game_quit(){
   stopped = 1;
   list_clear(&snake);
   list_clear(&food);
-  signal(SIGALRM, SIG_DFL);
-  system("clear");
+  signal(SIGALRM, SIG_IGN);
+  printf("\e[2J\e[H");
 }
 
 void update(int sig){
@@ -62,8 +63,8 @@ void update(int sig){
   sprintf(buffer, "%3d%3d", list_len(psnake), list_len(&food));
   if(!lock){
     lock = 1;
-    system("clear");
-    puts_at(1,1, buffer, 6);
+    printf("\e[2J\e[H");
+    puts_at(1,1, buffer);
     if(list_include(&food, next.x, next.y)){
       snake_extend(psnake, direction);
       make_food();
@@ -75,15 +76,15 @@ void update(int sig){
     lock = 0;
   }
   if(!stopped)
-    ualarm(100000, 0);
+    ualarm(delay, 0);
 }
 
 void draw_snake(Coord coord){
-  puts_at(coord.x+1, coord.y+1, "*", 1);
+  puts_at(coord.x+1, coord.y+1, "*");
 }
 
 void draw_food(Coord coord){
-  puts_at(coord.x+1, coord.y+1, "o", 1);
+  puts_at(coord.x+1, coord.y+1, "x");
 }
 
 void snake_extend(CoordList *_snake, int dir){
