@@ -32,13 +32,18 @@ int list_include(CoordList* list, int x, int y){
 
 Coord* list_del(CoordList* list, int x, int y){
   Coord *prev, *ptr;
-  prev = ptr = list->head;
-  if(!prev) { return NULL; }
+  ptr = list->head;
+  prev = NULL;
+  if(!ptr) { return NULL; }
   while(ptr){
     if(ptr->x == x && ptr->y == y){ break; }
     prev = ptr; ptr = ptr->next;
   }
-  if(ptr){ prev->next = ptr->next; }
+  if(prev){
+    if(ptr){ prev->next = ptr->next; }
+  } else {
+    list->head = ptr->next;
+  }
   return ptr;
 }
 
