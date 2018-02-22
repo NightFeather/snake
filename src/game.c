@@ -29,7 +29,6 @@ void game_init(){
 
   srand(time(NULL));
   get_terminal_size(&cols, &rows);
-  cols /= 2;
 
   list_clear(&snake);
 
@@ -73,7 +72,7 @@ void update(int sig){
     puts_at(1,1, buffer);
     if( list_include(psnake, next.x, next.y) ||
         next.x < 0 || next.y < 0 ||
-        next.x > cols || next.y > rows){
+        next.x >= (cols/2) || next.y >= rows){
       // u fail
       fail();
     } else {
@@ -94,11 +93,11 @@ void update(int sig){
 }
 
 void draw_snake(Coord coord){
-  puts_at(coord.x+1, coord.y+1, "*");
+  puts_at((coord.x)*2, coord.y, "■");
 }
 
 void draw_food(Coord coord){
-  puts_at(coord.x+1, coord.y+1, "x");
+  puts_at((coord.x)*2, coord.y, "★");
 }
 
 void snake_extend(CoordList *_snake, int dir){
@@ -172,7 +171,7 @@ void capture_key(){
 void make_food(){
   int x,y;
   do {
-    x = rand() % cols;
+    x = rand() % cols /2;
     y = rand() % rows;
   } while(list_include(&food, x, y));
 
@@ -182,7 +181,7 @@ void make_food(){
 void fail(){
   int x,y;
   stopped = 1;
-  x = cols / 2 - 3;
+  x = cols / 2 - 7;
   y = rows / 2;
   puts_at(x,y-1,"************");
   puts_at(x,y  ,"* u failed *");
