@@ -39,14 +39,24 @@ void get_terminal_size(int* cols, int* rows){
 void puts_at(int x, int y, char* string){
   char *ptr = string;
   x *= 2;
-  printf("\e[s\e[%d;%dH", row, col);
+  set_cursor(x,y);
   while(*ptr != 0){
     putchar(*ptr);
     ptr++; x++;
     if(*ptr > 0x80){
       while((*(ptr++) & 0xc0) == 0x80){ putchar(*ptr);}
-      printf("\e[%d;%dH", row, ++col);
+      set_cursor(x, ++y);
     }
   }
   printf("\e[u");
+}
+
+int set_cursor(int x, int y){
+  int cols, rows;
+  get_terminal_size(&cols, &rows);
+  if( x > cols || x < 1 || y > rows || y < 1){
+    return -1;
+  }
+  printf("\e[%d;%dH", y, x);
+  return 1;
 }
