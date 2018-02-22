@@ -59,13 +59,15 @@ void update(int sig){
   CoordList* psnake; psnake = &snake;
   Coord next;
   char buffer[512] = {0};
+
   next = next_coord(*psnake->head, direction);
-  sprintf( buffer,
-           "%dx%d h: (%d,%d) l:%3d spd:%3.1fms",
+  sprintf(buffer,
+          "%dx%d h: (%d,%d) l:%3d spd:%3.1fms",
           cols, rows,
           psnake->head->x, psnake->head->y,
           list_len(psnake),
           (float)delay/1000);
+
   if(!draw_lock){
     draw_lock = 1;
     printf("\e[2J\e[H");
@@ -88,6 +90,7 @@ void update(int sig){
       draw_lock = 0;
     }
   }
+
   if(!stopped)
     ualarm(delay, 0);
 }
