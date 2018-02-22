@@ -37,5 +37,6 @@ void get_terminal_size(int* cols, int* rows){
 }
 
 void puts_at(int col, int row, char* string, int length){
+  col *= 2;
   printf("\e[%d;%dH%.*s", row, col, length, string);
 }

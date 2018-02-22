@@ -29,6 +29,7 @@ void game_init(){
 
   srand(time(NULL));
   get_terminal_size(&cols, &rows);
+  cols /= 2;
 
   list_clear(&snake);
 
@@ -167,8 +168,8 @@ void capture_key(){
 void make_food(){
   int x,y;
   do {
-    x = rand() % cols + 1;
-    y = rand() % rows + 1;
+    x = rand() % cols;
+    y = rand() % rows;
   } while(list_include(&food, x, y));
 
   list_add(&food, x, y);
@@ -177,7 +178,7 @@ void make_food(){
 void fail(){
   int x,y;
   stopped = 1;
-  x = cols / 2 - 7;
+  x = cols / 2 - 3;
   y = rows / 2;
   puts_at(x,y-1,"************");
   puts_at(x,y  ,"* u failed *");
