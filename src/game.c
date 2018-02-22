@@ -71,7 +71,7 @@ void update(int sig){
   if(!draw_lock){
     draw_lock = 1;
     printf("\e[2J\e[H");
-    puts_at(1,1, buffer);
+    puts_at(cols - strlen(buffer), 0, buffer);
     if( list_include(psnake, next.x, next.y) ||
         next.x < 0 || next.y < 0 ||
         next.x >= (cols/2) || next.y >= rows){
