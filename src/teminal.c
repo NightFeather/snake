@@ -36,7 +36,17 @@ void get_terminal_size(int* cols, int* rows){
   *cols = w.ws_col;
 }
 
-void puts_at(int col, int row, char* string, int length){
-  col *= 2;
-  printf("\e[%d;%dH%.*s", row, col, length, string);
+void puts_at(int x, int y, char* string){
+  char *ptr = string;
+  x *= 2;
+  printf("\e[s\e[%d;%dH", row, col);
+  while(*ptr != 0){
+    putchar(*ptr);
+    ptr++; x++;
+    if(*ptr > 0x80){
+      while((*(ptr++) & 0xc0) == 0x80){ putchar(*ptr);}
+      printf("\e[%d;%dH", row, ++col);
+    }
+  }
+  printf("\e[u");
 }
