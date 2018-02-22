@@ -83,9 +83,9 @@ void update(int sig){
       } else {
         snake_move(psnake, direction);
       }
+      key_lock = 0;
       list_each(psnake, draw_snake);
       list_each(&food, draw_food);
-      key_lock = 0;
       draw_lock = 0;
     }
   }
@@ -156,8 +156,12 @@ void capture_key(){
         case 'D': // left
           dir = 2;
           break;
+        default:
+          dir = -1;
+          break;
       }
       if(dir >= 0 && (dir ^ direction) != 2 && !key_lock){
+        key_lock = 1;
         direction = dir;
       }
     }
