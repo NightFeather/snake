@@ -58,9 +58,11 @@ void game_quit(){
 void update(int sig){
   CoordList* psnake; psnake = &snake;
   Coord next;
+  int dir = direction;
   char buffer[512] = {0};
+  key_lock = 0;
 
-  next = next_coord(*psnake->head, direction);
+  next = next_coord(*psnake->head, dir);
   sprintf(buffer,
           "%dx%d h: (%d,%d) l:%3d spd:%3.1fms",
           cols, rows,
@@ -70,7 +72,7 @@ void update(int sig){
 
   if(!draw_lock){
     draw_lock = 1;
-    printf("\e[2J\e[H");
+    printf("\e[2J");
     puts_at(cols - strlen(buffer), 0, buffer);
     if( list_include(psnake, next.x, next.y) ||
         next.x < 0 || next.y < 0 ||
@@ -79,12 +81,11 @@ void update(int sig){
       fail();
     } else {
       if(list_include(&food, next.x, next.y)){
-        snake_extend(psnake, direction);
+        snake_extend(psnake, dir);
         make_food();
       } else {
-        snake_move(psnake, direction);
+        snake_move(psnake, dir);
       }
-      key_lock = 0;
       list_each(psnake, draw_snake);
       list_each(&food, draw_food);
       draw_lock = 0;
