@@ -20,14 +20,14 @@ void list_clear(CoordList* list){
   list->head = 0x0;
 }
 
-int list_include(CoordList* list, int x, int y){
+Coord* list_find(CoordList* list, int x, int y){
   Coord *ptr;
   ptr = list->head;
   while(ptr){
-    if(ptr->x == x && ptr->y == y){ return 1; }
+    if(ptr->x == x && ptr->y == y){ return ptr; }
     ptr = ptr->next;
   }
-  return 0;
+  return NULL;
 }
 
 Coord* list_del(CoordList* list, int x, int y){
@@ -64,7 +64,7 @@ int list_len(CoordList* list){
   return i;
 }
 
-Coord* list_take(CoordList* list){
+Coord* list_last(CoordList* list){
   Coord *prev, *ptr;
   prev = ptr = list->head;
   if(!prev) { return NULL; }

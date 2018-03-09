@@ -15,9 +15,9 @@ void list_add(CoordList*,int,int);
 void list_clear(CoordList*);
 Coord* list_del(CoordList*,int,int);
 void list_each(CoordList*, void (*)(Coord));
-int list_include(CoordList*, int, int);
+Coord* list_find(CoordList*, int, int);
 int list_len(CoordList*);
-Coord* list_take(CoordList*);
+Coord* list_last(CoordList*);
 
 
 #endif

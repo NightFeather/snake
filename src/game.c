@@ -17,6 +17,7 @@ static void update(int);
 static void capture_key(void);
 static void draw_food();
 static void draw_snake(Coord);
+static void snake_cut(CoordList*, Coord);
 static void fail();
 static void make_food();
 static Coord next_coord(Coord, int);
@@ -32,7 +33,7 @@ void game_init(){
 
   list_clear(&snake);
 
-  for(i = 0; i < 3; i++)
+  for(i = 0; i < 10; i++)
     list_add(&snake, i, 0);
 
   sa.sa_handler = update;
@@ -74,22 +75,22 @@ void update(int sig){
     draw_lock = 1;
     printf("\e[2J");
     puts_at(cols - strlen(buffer), 0, buffer);
-    if( list_include(psnake, next.x, next.y) ||
-        next.x < 0 || next.y < 0 ||
-        next.x >= (cols/2) || next.y >= rows){
+    if( list_find(psnake, next.x, next.y)){
+      snake_cut(psnake, next);
+    } else if ( next.x < 0 || next.y < 0 ||
+                next.x >= (cols/2) || next.y >= rows){
       // u fail
       fail();
-    } else {
-      if(list_include(&food, next.x, next.y)){
-        snake_extend(psnake, dir);
-        make_food();
-      } else {
-        snake_move(psnake, dir);
-      }
-      list_each(psnake, draw_snake);
-      list_each(&food, draw_food);
-      draw_lock = 0;
     }
+    if(list_find(&food, next.x, next.y)){
+      snake_extend(psnake, dir);
+      make_food();
+    } else {
+      snake_move(psnake, dir);
+    }
+    list_each(psnake, draw_snake);
+    list_each(&food, draw_food);
+    draw_lock = 0;
   }
 
   if(!stopped)
@@ -104,6 +105,15 @@ void draw_food(Coord coord){
   puts_at((coord.x)*2, coord.y, "★");
 }
 
+void snake_cut(CoordList *_snake, Coord next){
+  Coord* ptr;
+  CoordList clean;
+  ptr = list_find(_snake, next.x, next.y);
+  clean.head = ptr->next;
+  ptr->next = NULL;
+  list_clear(&clean);
+}
+
 void snake_extend(CoordList *_snake, int dir){
   Coord next, *temp; temp = 0x0;
   next = next_coord(*_snake->head, direction);
@@ -116,7 +126,7 @@ void snake_move(CoordList *_snake, int dir){
   Coord next, *temp; temp = 0x0;
   next = next_coord(*_snake->head, direction);
   list_add(_snake, next.x, next.y);
-  temp = list_take(_snake);
+  temp = list_last(_snake);
   free(temp);
 }
 
@@ -177,7 +187,7 @@ void make_food(){
   do {
     x = rand() % cols /2;
     y = rand() % rows;
-  } while(list_include(&food, x, y));
+  } while(list_find(&food, x, y));
 
   list_add(&food, x, y);
 }
